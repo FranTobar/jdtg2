@@ -1,0 +1,155 @@
+
+DROP TABLE IF EXISTS categoriaproducto;
+
+CREATE TABLE categoriaproducto (
+  nombre varchar(20) NOT NULL,
+  PRIMARY KEY (nombre)); 
+
+
+INSERT INTO categoriaproducto VALUES ('Bebidas'),('Empanadas'),('Pizzas');
+
+
+DROP TABLE IF EXISTS cliente;
+CREATE TABLE cliente (
+  id_cliente int(11) NOT NULL AUTO_INCREMENT,
+  nombre varchar(50) NOT NULL,
+  telefono int(11) NOT NULL,
+  direccion varchar(100) NOT NULL,
+  PRIMARY KEY (id_cliente)
+); 
+
+INSERT INTO cliente VALUES (1,'Maximiliano',47456601,'Av. 1 nro. 2001'),(2,'Francisco',47456602,'Av. 2 nro. 2002'),(3,'Tomas',47456603,'Av. 3 nro. 2003'),(4,'Pablo',47456603,'Av. 4 nro. 2004');
+
+
+
+DROP TABLE IF EXISTS estadopedido;
+
+CREATE TABLE estadopedido (
+  nombre varchar(20) NOT NULL,
+  PRIMARY KEY (nombre)
+);
+
+INSERT INTO estadopedido VALUES ('Listo'),('Preparacion'),('Reparto'),('Terminado');
+
+
+DROP TABLE IF EXISTS pedido;
+
+CREATE TABLE pedido (
+  id_pedido int(11) NOT NULL AUTO_INCREMENT,
+  fecha date NOT NULL,
+  hora varchar(6) NOT NULL,
+  total decimal(7,2) NOT NULL,
+  envio tinyint(1) NOT NULL,
+  estado varchar(20) NOT NULL,
+  observaciones varchar(500) DEFAULT NULL,
+  PRIMARY KEY (id_pedido));
+
+
+
+
+INSERT INTO pedido VALUES (19,'2015-10-06','01-06',240.00,0,'Preparacion','-'),(20,'2015-10-06','01-57',400.00,0,'Preparacion','-'),(21,'2015-10-06','13:06',120.00,0,'Preparacion','-');
+
+
+DROP TABLE IF EXISTS producto;
+
+CREATE TABLE producto (
+  id_producto int(11) NOT NULL AUTO_INCREMENT,
+  nombre varchar(255) NOT NULL,
+  categoria varchar(20) NOT NULL,
+  precio decimal(5,2) NOT NULL,
+  PRIMARY KEY (id_producto),
+  FOREIGN KEY (categoria) REFERENCES categoriaproducto (nombre));
+
+
+INSERT INTO producto VALUES (1,'Pizza muzzarela grande','Pizzas',80.00),(2,'Pizza muzzarela chica','Pizzas',60.00),(3,'Pizza anchoas grande','Pizzas',95.00),(4,'Pizza anchoas chica','Pizzas',80.00),(5,'Empanada jamon y queso','Empanadas',15.00),(6,'Empanada carne','Empanadas',15.00),(7,'Empanada carne picante','Empanadas',15.00),(8,'Empanada humita','Empanadas',15.00),(9,'Cerveza Quilmes 1 litro','Bebidas',25.00),(10,'Pepsi 1,5 litros','Bebidas',25.00);
+
+
+DROP TABLE IF EXISTS repartidor;
+
+CREATE TABLE repartidor (
+  nombre varchar(50) NOT NULL,
+  dni int(11) NOT NULL,
+  telefono int(11) NOT NULL,
+  PRIMARY KEY (dni));
+
+INSERT INTO repartidor VALUES ('Juan',33999001,0),('Sebastian',33999002,0),('Adrian',33999003,0);
+
+
+DROP TABLE IF EXISTS envio;
+
+CREATE TABLE envio (
+  id_pedido int(11) NOT NULL,
+  dni_repartidor int(11) NOT NULL,
+  observaciones varchar(500) DEFAULT NULL,
+  PRIMARY KEY(id_pedido),
+  FOREIGN KEY (id_pedido) REFERENCES pedido (id_pedido),
+  FOREIGN KEY (dni_repartidor) REFERENCES repartidor (dni)); 
+
+DROP TABLE IF EXISTS itempedido;
+
+
+CREATE TABLE itempedido (
+  id_pedido int(11) NOT NULL,
+  id_producto int(11) NOT NULL,
+  cantidad int(11) NOT NULL,
+  PRIMARY KEY (id_pedido,id_producto),
+  FOREIGN KEY (id_pedido) REFERENCES pedido (id_pedido),
+  FOREIGN KEY (id_producto) REFERENCES producto (id_producto));
+
+
+INSERT INTO itempedido VALUES (19,2,4),(20,4,5),(21,6,4);
+
+DROP TABLE IF EXISTS categoriaProveedor;
+
+CREATE TABLE categoriaProveedor(
+nombre varchar(50),
+PRIMARY KEY (nombre));
+
+
+DROP TABLE IF EXISTS proveedor;
+
+CREATE TABLE proveedor (
+nombre varchar(50),
+cuitl int(20),
+telefono int(15),
+direccion varchar(100),
+categoria varchar(50),
+PRIMARY KEY (cuitl),
+FOREIGN KEY (categoria) REFERENCES categoriaProveedor (nombre));
+
+DROP TABLE IF EXISTS categoriaMateriaPrima;
+
+CREATE TABLE categoriaMateriaPrima(
+nombre varchar(20), 
+PRIMARY KEY (nombre));
+
+
+
+DROP TABLE IF EXISTS materiaPrima;
+
+CREATE TABLE materiaPrima(
+nombre varchar(50),
+id_materiaPrima int,
+categoria varchar(20),
+fechaVencimiento date,
+PRIMARY KEY (id_materiaPrima),
+FOREIGN KEY (categoria) REFERENCES categoriaMateriaPrima (nombre));
+
+
+DROP TABLE IF EXISTS solicitudMateriaPrima;
+
+CREATE TABLE solicitudMateriaPrima(
+numeroSolicitud int NOT NULL AUTO_INCREMENT,
+proveedor int(20),
+PRIMARY KEY (numeroSolicitud),
+FOREIGN KEY (proveedor) REFERENCES proveedor (cuitl));
+
+DROP TABLE IF EXISTS itemMateriaPrima;
+
+CREATE TABLE itemMateriaPrima(
+id_materia int,
+id_solicitud int,
+cantidad int,
+PRIMARY KEY (id_materia,id_solicitud),
+FOREIGN KEY (id_materia) REFERENCES materiaPrima (id_materiaPrima),
+FOREIGN KEY (id_solicitud) REFERENCES solicitudMateriaPrima (numeroSolicitud));
