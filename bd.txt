@@ -1,5 +1,5 @@
 
-DROP TABLE IF EXISTS categoriaproducto;
+DROP TABLE IF EXISTS categoriaproducto;    /* hola mundo tomi*/
 
 CREATE TABLE categoriaproducto (
   nombre varchar(20) NOT NULL,
